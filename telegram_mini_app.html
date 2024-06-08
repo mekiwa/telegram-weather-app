@@ -1,0 +1,72 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Mini App</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .weather {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Mini App</h1>
+        <div class="weather">
+            <p id="location">Fetching location...</p>
+            <p id="weather">Fetching weather...</p>
+        </div>
+    </div>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        navigator.geolocation.getCurrentPosition(success, error);
+
+        function success(position) {
+            const latitude  = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            document.getElementById('location').textContent = `Latitude: ${latitude} °, Longitude: ${longitude} °`;
+            
+            fetchWeather(latitude, longitude);
+        }
+
+        function error() {
+            document.getElementById('location').textContent = 'Unable to retrieve your location';
+        }
+
+        function fetchWeather(lat, lon) {
+            const apiKey = 'YOUR_WEATHER_API_KEY'; // Replace with your API key
+            const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${lat},${lon}&aqi=no`;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const weather = data.current.condition.text;
+                    const temp_c = data.current.temp_c;
+                    document.getElementById('weather').textContent = `Weather: ${weather}, Temperature: ${temp_c}°C`;
+                })
+                .catch(() => {
+                    document.getElementById('weather').textContent = 'Unable to retrieve weather data';
+                });
+        }
+    </script>
+</body>
+</html>
